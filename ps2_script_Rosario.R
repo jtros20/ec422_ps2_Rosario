@@ -75,3 +75,39 @@ unemp_top_increases <- unemp |>
 unemp_top_decreases <- unemp |>
   slice_min(order_by = unemployment_rate_change, n = 5, with_ties = TRUE)
 
+# Single line plot of unemployment_rate against date
+ggplot(unemp, aes(x = date, y = unemployment_rate, color = region)) +
+  geom_line() +
+  labs(title = "Unemployment Rates by Region Over Time",
+       x = "Date",
+       y = "Unemployment Rate (%)",
+       color = "Region") +
+  theme_minimal()
+
+# Same as last plot but creates seperate panel for each region
+ggplot(unemp, aes(x = date, y = unemployment_rate, color = region)) +
+  geom_line() +
+  facet_wrap(~ region) +
+  labs(title = "Unemployment Rates by Region Over Time",
+       x = "Date",
+       y = "Unemployment Rate (%)",
+       color = "Region") +
+  theme_minimal()
+
+# Bar chart of mean unemployment rate by region
+ggplot(unemp_summary, aes(x = fct_reorder(region, mean_rate), y = mean_rate)) +
+  geom_col() +
+  labs(title = "Average Unemployment Rate by Region",
+       x = "Region",
+       y = "Mean Unemployment Rate (%)") +
+  theme_minimal()
+
+# Scatter Plot investigating the relationship between unemployment rates and month-over-month changes in unemployment across the 5 regions
+# Plotted this to see if there were regional differences if excluding outliers (turns out there isn't)
+ggplot(unemp, aes(x = unemployment_rate, y = unemployment_rate_change, color = region)) +
+  geom_point(alpha = 0.5) +
+  labs(title = "Unemployment Rate vs. Monthly Change",
+       x = "Unemployment Rate (%)",
+       y = "Monthly Change in Unemployment Rate (Percentage Points)",
+       color = "Region") +
+  theme_minimal()

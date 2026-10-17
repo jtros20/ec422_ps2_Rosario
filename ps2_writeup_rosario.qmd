@@ -1,0 +1,128 @@
+---
+title: "Problem Set 2"
+author: "Jacob Rosario"
+date: 10/16/2026
+format:
+  html:
+    toc: true
+    embed-resources: true
+---
+
+<https://github.com/jtros20/ec422_ps2_Rosario.git>
+
+# Data
+
+The data being used is monthly unemployment rates for the United States as a whole and four distinct states. This data is pulled directly from FRED, the states used are California, New York, Oregon, and Texas. The time range of this data is from 1976-01-01 to 2026-10-01.
+
+```{r}
+library(tidyverse)
+library(tidyquant)
+
+
+source("ps2_script_Rosario.R")
+head(unemp)
+```
+
+# Wrangling
+
+Table 1: Shows the mean, minimum, and maximum unemployment rates for each region across the whole data set.
+
+```{r}
+library(knitr)
+
+kable(
+  unemp_summary,
+  digits = 2,
+  col.names = c("Region", "Mean Rate (%)", "Minimum Rate (%)", "Maximum Rate (%)"),
+  caption = "Table 1: Unemployment Rate Summary by Region (Full Sample)"
+)
+```
+
+Table 2: Same statistics as the first table however only uses observations from January 2025 onward.
+
+```{r}
+kable(
+  unemp_recent_summary,
+  digits = 2,
+  col.names = c("Region", "Mean Rate (%)", "Minimum Rate (%)", "Maximum Rate (%)"),
+  caption = "Table 2: Unemployment Rate Summary by Region (January 2015 Onward)"
+)
+```
+
+Table 3: Shows largest month-over-month increases in unemployment rates not including covid
+
+```{r}
+kable(
+  unemp_top_increases_no_covid |>
+    select(region, date, unemployment_rate, unemployment_rate_change),
+  digits = 2,
+  col.names = c("Region", "Date", "Unemployment Rate (%)", "Monthly Change (pp)"),
+  caption = "Table 3: Five Largest Monthly Unemployment Increases (Excluding COVID)"
+)
+```
+
+Table 4: Shows largest month-over-month decreases in unemployment rates not including covid
+
+```{r}
+kable(
+  unemp_top_decreases_no_covid |>
+    select(region, date, unemployment_rate, unemployment_rate_change),
+  digits = 2,
+  col.names = c("Region", "Date", "Unemployment Rate (%)", "Monthly Change (pp)"),
+  caption = "Table 4: Five Largest Monthly Unemployment Decreases (Excluding COVID)"
+)
+```
+
+# Visualization
+
+Plot 1: Single line plot of unemployment_rate against date, compares unemployment rate across all regions
+
+```{r}
+ggplot(unemp, aes(x = date, y = unemployment_rate, color = region)) +
+  geom_line() +
+  labs(title = "Unemployment Rates by Region Over Time",
+       x = "Date",
+       y = "Unemployment Rate (%)",
+       color = "Region") +
+  theme_minimal()
+```
+
+Plot 2: Same as last plot but creates seperate panel for each region
+
+```{r}
+ggplot(unemp, aes(x = date, y = unemployment_rate, color = region)) +
+  geom_line() +
+  facet_wrap(~ region) +
+  labs(title = "Unemployment Rates by Region Over Time",
+       x = "Date",
+       y = "Unemployment Rate (%)",
+       color = "Region") +
+  theme_minimal()
+```
+
+Plot 3: bar chart that compares average unemployment rates across the whole sample and order them from smallest to largest.
+
+```{r}
+ggplot(unemp_summary, aes(x = fct_reorder(region, mean_rate), y = mean_rate)) +
+  geom_col() +
+  labs(title = "Average Unemployment Rate by Region",
+       x = "Region",
+       y = "Mean Unemployment Rate (%)") +
+  theme_minimal()
+```
+
+Plot 4: Scatter Plot investigating the relationship between unemployment rates and month-over-month changes in unemployment across the 5 regions. Plotted this to see if there were regional differences if excluding outliers (turns out there isn't)
+
+```{r}
+ggplot(unemp, aes(x = unemployment_rate, y = unemployment_rate_change, color = region)) +
+  geom_point(alpha = 0.5) +
+  labs(title = "Unemployment Rate vs. Monthly Change",
+       x = "Unemployment Rate (%)",
+       y = "Monthly Change in Unemployment Rate (Percentage Points)",
+       color = "Region") +
+  theme_minimal()
+```
+
+# Reflection
+
+The process of starting this project and adding/pushing things into a github repository from R studio was very straightforward. The first trip up I had was with slice_max and min as I was unsure on where to start. Ended up having to use Github copilot to explain the function to me (and maybe a couple of hints) to get me going. I also tripped up and the plot I needed to create myself, it was difficult coming up with a topic I wanted to visualize, as most of the prominent statistics were already created/being used. I feel a lot more comfortable using repositories in Github and linking them to Rstudio to be able to save my work, and be able to snapshot previous code so if a large mistake happens I can go back to earlier code very easily.

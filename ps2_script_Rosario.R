@@ -75,6 +75,15 @@ unemp_top_increases <- unemp |>
 unemp_top_decreases <- unemp |>
   slice_min(order_by = unemployment_rate_change, n = 5, with_ties = TRUE)
 
+# Same thing as above but excludes covid year
+unemp_top_increases_no_covid <- unemp |>
+  filter(year(date) != 2020) |>
+  slice_max(order_by = unemployment_rate_change, n = 5, with_ties = TRUE)
+
+unemp_top_decreases_no_covid <- unemp |>
+  filter(year(date) != 2020) |>
+  slice_min(order_by = unemployment_rate_change, n = 5, with_ties = TRUE)
+
 # Single line plot of unemployment_rate against date
 ggplot(unemp, aes(x = date, y = unemployment_rate, color = region)) +
   geom_line() +
